@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Your Result | Online Exam System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='Style.css') }}" />
+  </head>
+  <body>
+    <div class="result-box">
+      <h2>🎉 Exam Result</h2>
+
+      {% set percentage = ((score / total) * 100) | round(1) if total > 0 else 0 %}
+
+      <div class="score-display">
+        <span class="score-number">{{ score }}</span>
+        <span class="score-total"> / {{ total }}</span>
+      </div>
+
+      <p class="percentage">
+        {% if percentage >= 50 %}
+          ✅ <strong>{{ percentage }}%</strong> — 
+          {% if percentage >= 80 %}Excellent!{% elif percentage >= 65 %}Good Job!{% else %}Pass{% endif %}
+        {% else %}
+          ❌ <strong>{{ percentage }}%</strong> — Better luck next time!
+        {% endif %}
+      </p>
+
+      <p style="color:#777;font-size:13px;">
+        Negative marking applied: -0.25 per wrong answer
+      </p>
+
+      <br />
+      {% if percentage >= 50 %}
+      <a href="/certificate"><button>📄 Download Certificate</button></a>
+      <br /><br />
+      {% endif %}
+
+      <a href="/logout"><button class="btn-secondary">Logout</button></a>
+    </div>
+  </body>
+</html>

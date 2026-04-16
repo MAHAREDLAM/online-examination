@@ -1,0 +1,230 @@
+/* ── Base ───────────────────────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(135deg, #43cea2 0%, #185a9d 100%);
+  min-height: 100vh;
+  margin: 0;
+  padding: 20px;
+}
+
+/* ── Container Card ─────────────────────────────────────────────────────────── */
+.container {
+  width: 90%;
+  max-width: 900px;
+  margin: 30px auto;
+  background: #fff;
+  padding: 30px 35px;
+  border-radius: 16px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+  animation: fadeIn 0.4s ease;
+}
+
+/* ── Headings ───────────────────────────────────────────────────────────────── */
+h2 { text-align: center; color: #2c3e50; margin-bottom: 20px; }
+h3 { color: #34495e; border-bottom: 2px solid #ecf0f1; padding-bottom: 8px; }
+
+/* ── Input Fields ───────────────────────────────────────────────────────────── */
+input[type="text"],
+input[type="password"],
+input[type="email"],
+select {
+  width: 100%;
+  padding: 11px 14px;
+  margin: 6px 0;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+  transition: border 0.2s;
+  background: #fafafa;
+}
+input:focus, select:focus {
+  outline: none;
+  border-color: #3498db;
+  background: #fff;
+}
+
+/* ── Buttons ────────────────────────────────────────────────────────────────── */
+button {
+  padding: 10px 22px;
+  border: none;
+  background: #3498db;
+  color: white;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  transition: background 0.2s, transform 0.1s;
+}
+button:hover  { background: #2980b9; transform: translateY(-1px); }
+button:active { transform: translateY(0); }
+
+button[type="submit"] { background: #2ecc71; }
+button[type="submit"]:hover { background: #27ae60; }
+
+.btn-secondary { background: #95a5a6; }
+.btn-secondary:hover { background: #7f8c8d; }
+
+.btn-danger { background: #e74c3c; padding: 6px 12px; font-size: 12px; }
+.btn-danger:hover { background: #c0392b; }
+
+/* ── Timer ──────────────────────────────────────────────────────────────────── */
+#timer-box {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  text-align: center;
+  font-size: 22px;
+  font-weight: bold;
+  color: white;
+  background: rgba(24, 90, 157, 0.92);
+  padding: 10px;
+  z-index: 999;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+#timer-box.timer-warning { background: rgba(192, 57, 43, 0.92); }
+
+/* ── Question Card ──────────────────────────────────────────────────────────── */
+.question {
+  background: #f8f9fa;
+  padding: 20px 25px;
+  border-radius: 12px;
+  margin: 70px auto 15px;
+  max-width: 700px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+}
+.q-number { font-size: 13px; color: #888; margin: 0 0 8px 0; }
+.option {
+  display: block;
+  padding: 8px 12px;
+  margin: 6px 0;
+  border-radius: 6px;
+  cursor: pointer;
+  border: 1px solid #e0e0e0;
+  transition: background 0.15s;
+}
+.option:hover { background: #eaf4fb; }
+.option input { margin-right: 8px; }
+
+/* ── Nav Buttons ────────────────────────────────────────────────────────────── */
+.nav-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin: 20px auto;
+  max-width: 700px;
+}
+
+/* ── Question Palette ───────────────────────────────────────────────────────── */
+.palette {
+  position: fixed;
+  right: 15px;
+  top: 60px;
+  background: white;
+  padding: 10px;
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18);
+  max-height: calc(100vh - 80px);
+  overflow-y: auto;
+  width: 56px;
+}
+.palette button {
+  width: 36px;
+  height: 36px;
+  margin: 4px auto;
+  display: block;
+  border-radius: 50%;
+  background: #bdc3c7;
+  color: #2c3e50;
+  font-weight: bold;
+  font-size: 12px;
+  padding: 0;
+  transition: background 0.2s;
+}
+.palette button:hover  { background: #3498db; color: white; transform: none; }
+.palette button.active { background: #2980b9; color: white; }
+.palette button.answered { background: #2ecc71; color: white; }
+
+/* ── Result Box ─────────────────────────────────────────────────────────────── */
+.result-box {
+  width: 90%;
+  max-width: 460px;
+  margin: 80px auto;
+  background: white;
+  padding: 40px 30px;
+  text-align: center;
+  border-radius: 16px;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.2);
+  animation: fadeIn 0.4s ease;
+}
+.score-display { margin: 20px 0 10px; }
+.score-number  { font-size: 64px; font-weight: 800; color: #2c3e50; }
+.score-total   { font-size: 28px; color: #95a5a6; }
+.percentage    { font-size: 18px; margin: 8px 0 20px; }
+
+/* ── Admin Section ──────────────────────────────────────────────────────────── */
+.admin-section {
+  margin-top: 30px;
+  padding: 20px;
+  background: #f8f9fa;
+  border-radius: 12px;
+}
+.options-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+/* ── Tables ─────────────────────────────────────────────────────────────────── */
+table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px; }
+th, td { border: 1px solid #e0e0e0; padding: 9px 12px; text-align: left; }
+th { background: #3498db; color: white; }
+tr:nth-child(even) { background: #f2f2f2; }
+
+/* ── Login Box ──────────────────────────────────────────────────────────────── */
+.login-box {
+  width: 90%;
+  max-width: 380px;
+  margin: 80px auto;
+  padding: 36px 30px;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.22);
+  text-align: center;
+  animation: fadeIn 0.4s ease;
+}
+
+/* ── Messages ───────────────────────────────────────────────────────────────── */
+.error-msg {
+  color: #c0392b;
+  background: #fdecea;
+  border: 1px solid #f5c6cb;
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 14px;
+  margin-bottom: 14px;
+}
+.success-msg {
+  color: #1e8449;
+  background: #eafaf1;
+  border: 1px solid #a9dfbf;
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 14px;
+  margin-bottom: 14px;
+}
+
+/* ── Animation ──────────────────────────────────────────────────────────────── */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Responsive ─────────────────────────────────────────────────────────────── */
+@media (max-width: 600px) {
+  .palette { display: none; }
+  .options-grid { grid-template-columns: 1fr; }
+  .container { padding: 20px 16px; }
+  .score-number { font-size: 48px; }
+}

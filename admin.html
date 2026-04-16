@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Dashboard | Online Exam System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='Style.css') }}" />
+  </head>
+  <body>
+    <div class="container">
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">
+        <h2>🛠 Admin Dashboard</h2>
+        <div>
+          <a href="/export"><button>📥 Download Results (Excel)</button></a>
+          <a href="/logout"><button class="btn-secondary">Logout</button></a>
+        </div>
+      </div>
+
+      <!-- ── Add Question Form ── -->
+      <div class="admin-section">
+        <h3>➕ Add New Question</h3>
+
+        {% if success %}
+        <p class="success-msg">{{ success }}</p>
+        {% endif %}
+        {% if error %}
+        <p class="error-msg">{{ error }}</p>
+        {% endif %}
+
+        <form method="POST" autocomplete="off">
+          <input name="q" placeholder="Question text" required style="width:98%;"/><br /><br />
+          <div class="options-grid">
+            <input name="a" placeholder="Option A" required />
+            <input name="b" placeholder="Option B" required />
+            <input name="c" placeholder="Option C" required />
+            <input name="d" placeholder="Option D" required />
+          </div>
+          <br />
+          <select name="correct" required>
+            <option value="" disabled selected>-- Correct Option --</option>
+            <option value="A">A</option>
+            <option value="B">B</option>
+            <option value="C">C</option>
+            <option value="D">D</option>
+          </select>
+          <br /><br />
+          <button type="submit">Add Question</button>
+        </form>
+      </div>
+
+      <!-- ── Questions List ── -->
+      <div class="admin-section">
+        <h3>📋 All Questions ({{ questions|length }})</h3>
+        {% if questions %}
+        <div style="overflow-x:auto;">
+          <table>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Question</th>
+                <th>A</th><th>B</th><th>C</th><th>D</th>
+                <th>Answer</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for q in questions %}
+              <tr>
+                <td>{{ loop.index }}</td>
+                <td>{{ q[1] }}</td>
+                <td>{{ q[2] }}</td>
+                <td>{{ q[3] }}</td>
+                <td>{{ q[4] }}</td>
+                <td>{{ q[5] }}</td>
+                <td><b>{{ q[6] }}</b></td>
+                <td>
+                  <form method="POST" action="/delete_question/{{ q[0] }}"
+                    onsubmit="return confirm('Delete this question?');">
+                    <button class="btn-danger" type="submit">🗑 Delete</button>
+                  </form>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        {% else %}
+        <p style="color:#888;">No questions added yet.</p>
+        {% endif %}
+      </div>
+
+      <!-- ── Results List ── -->
+      <div class="admin-section">
+        <h3>📊 Student Results ({{ results|length }})</h3>
+        {% if results %}
+        <div style="overflow-x:auto;">
+          <table>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Username</th>
+                <th>Score</th>
+                <th>Total Questions</th>
+                <th>Date & Time (UTC)</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for r in results %}
+              <tr>
+                <td>{{ loop.index }}</td>
+                <td>{{ r.username }}</td>
+                <td>{{ r.score }}</td>
+                <td>{{ r.get('total', '—') }}</td>
+                <td>{{ r.get('timestamp', '—') }}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        {% else %}
+        <p style="color:#888;">No results yet.</p>
+        {% endif %}
+      </div>
+
+    </div>
+  </body>
+</html>

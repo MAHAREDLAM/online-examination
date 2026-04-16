@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Online Exam | Examination System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='Style.css') }}" />
+  </head>
+  <body>
+    {% if error %}
+    <div class="container">
+      <p class="error-msg">{{ error }}</p>
+      <a href="/logout"><button>Go Back</button></a>
+    </div>
+    {% else %}
+
+    <div id="timer-box">⏱ Time Left: <span id="timer">10:00</span></div>
+
+    <form method="POST" id="examForm">
+      <!-- Question Palette -->
+      <div class="palette">
+        <p style="font-size:12px;margin:0 0 6px 0;text-align:center;">Questions</p>
+        {% for q in questions %}
+        <button type="button" id="palette-btn-{{ loop.index0 }}" onclick="showQuestion({{ loop.index0 }})">
+          {{ loop.index }}
+        </button>
+        {% endfor %}
+      </div>
+
+      <!-- Questions -->
+      {% for q in questions %}
+      <div class="question" id="question-{{ loop.index0 }}" style="display:none;">
+        <p class="q-number">Question {{ loop.index }} of {{ questions|length }}</p>
+        <p><b>{{ q[1] }}</b></p>
+
+        <label class="option">
+          <input type="radio" name="{{ q[0] }}" value="A" onchange="markAnswered({{ loop.index0 }})" /> {{ q[2] }}
+        </label><br />
+        <label class="option">
+          <input type="radio" name="{{ q[0] }}" value="B" onchange="markAnswered({{ loop.index0 }})" /> {{ q[3] }}
+        </label><br />
+        <label class="option">
+          <input type="radio" name="{{ q[0] }}" value="C" onchange="markAnswered({{ loop.index0 }})" /> {{ q[4] }}
+        </label><br />
+        <label class="option">
+          <input type="radio" name="{{ q[0] }}" value="D" onchange="markAnswered({{ loop.index0 }})" /> {{ q[5] }}
+        </label>
+      </div>
+      {% endfor %}
+
+      <div class="nav-buttons">
+        <button type="button" onclick="prevQuestion()">← Previous</button>
+        <button type="button" onclick="nextQuestion()">Next →</button>
+        <button type="submit" id="submitBtn" onclick="return confirmSubmit()">✔ Submit Exam</button>
+      </div>
+    </form>
+
+    <div style="text-align:center;margin-top:10px;">
+      <a href="/logout"><button class="btn-secondary">Logout</button></a>
+    </div>
+
+    <script>
+      (function () {
+        // ── State ────────────────────────────────────────────────────────────
+        var totalQuestions = {{ questions|length }};
+        var current = 0;
+        var answered = new Array(totalQuestions).fill(false);
+
+        // ── Question Navigation ──────────────────────────────────────────────
+        function showQuestion(index) {
+          document.querySelectorAll(".question").forEach(function (el) {
+            el.style.display = "none";
+          });
+          var q = document.getElementById("question-" + index);
+          if (q) q.style.display = "block";
+          current = index;
+
+          // Highlight active palette button
+          document.querySelectorAll(".palette button").forEach(function (btn, i) {
+            btn.classList.toggle("active", i === index);
+          });
+        }
+
+        function nextQuestion() {
+          if (current < totalQuestions - 1) showQuestion(current + 1);
+        }
+
+        function prevQuestion() {
+          if (current > 0) showQuestion(current - 1);
+        }
+
+        function markAnswered(index) {
+          answered[index] = true;
+          var btn = document.getElementById("palette-btn-" + index);
+          if (btn) btn.classList.add("answered");
+        }
+
+        function confirmSubmit() {
+          var unanswered = answered.filter(function (a) { return !a; }).length;
+          if (unanswered > 0) {
+            return confirm(
+              "You have " + unanswered + " unanswered question(s).\nDo you still want to submit?"
+            );
+          }
+          return confirm("Are you sure you want to submit the exam?");
+        }
+
+        // Expose to inline onclick handlers
+        window.showQuestion = showQuestion;
+        window.nextQuestion = nextQuestion;
+        window.prevQuestion = prevQuestion;
+        window.markAnswered = markAnswered;
+        window.confirmSubmit = confirmSubmit;
+
+        // Show first question on load
+        showQuestion(0);
+
+        // ── Countdown Timer ──────────────────────────────────────────────────
+        var timeLeft = 600; // 10 minutes
+        var timerEl = document.getElementById("timer");
+        var timerBox = document.getElementById("timer-box");
+
+        var countdown = setInterval(function () {
+          timeLeft--;
+          var m = Math.floor(timeLeft / 60);
+          var s = timeLeft % 60;
+          timerEl.textContent = m + ":" + (s < 10 ? "0" : "") + s;
+
+          if (timeLeft <= 60) timerBox.classList.add("timer-warning");
+          if (timeLeft <= 0) {
+            clearInterval(countdown);
+            alert("⏰ Time is up! Your exam is being submitted automatically.");
+            document.getElementById("examForm").submit();
+          }
+        }, 1000);
+
+        // ── Proctoring ───────────────────────────────────────────────────────
+        function logActivity(activity) {
+          fetch("/log", {
+            method: "POST",
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            body: "activity=" + encodeURIComponent(activity),
+          });
+        }
+
+        document.addEventListener("visibilitychange", function () {
+          if (document.hidden) {
+            alert("⚠️ Warning: Tab switching detected! This has been logged.");
+            logActivity("Tab Switched");
+          }
+        });
+
+        document.addEventListener("contextmenu", function (e) {
+          e.preventDefault();
+          logActivity("Right Click Attempt");
+        });
+
+        document.addEventListener("copy", function (e) {
+          e.preventDefault();
+          alert("🚫 Copying is not allowed during the exam.");
+          logActivity("Copy Attempt");
+        });
+
+        document.addEventListener("keydown", function (e) {
+          // Block common shortcut keys
+          if (
+            (e.ctrlKey && ["c", "v", "u", "s", "a"].includes(e.key.toLowerCase())) ||
+            e.key === "F12"
+          ) {
+            e.preventDefault();
+            logActivity("Shortcut Key: " + e.key);
+          }
+        });
+
+      })();
+    </script>
+    {% endif %}
+  </body>
+</html>
